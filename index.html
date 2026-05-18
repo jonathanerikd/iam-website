@@ -1,0 +1,1894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PT Indo Artha Mandiri</title>
+<style>
+/* ── RESET ─────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --nav-h:52px;
+  --filter-h:40px;
+  --red:#cc0000;
+  --black:#111;
+  --white:#fff;
+  --gray:#999;
+  --border:#e5e5e5;
+  --f:'Helvetica Neue',Helvetica,Arial,sans-serif;
+}
+html{-webkit-font-smoothing:antialiased;scroll-behavior:auto}
+body{font-family:var(--f);background:var(--white);color:var(--black);overflow-x:hidden}
+button{font-family:var(--f);cursor:pointer}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%;height:100%;width:100%;object-fit:cover}
+
+.intro-logo-img,
+.nav-logo-img{
+  width:auto;
+  height:auto;
+}
+
+/* ── INTRO OVERLAY ──────────────────────────────────── */
+#intro{
+  position:fixed;inset:0;z-index:2000;
+  background:var(--black);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  pointer-events:none;
+}
+#intro.done{display:none}
+
+.intro-logo-wrap{
+  display:flex;flex-direction:column;align-items:center;gap:20px;
+  animation:introFadeIn 0.6s ease both;
+}
+@keyframes introFadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+.intro-logo-img{
+  width:120px;
+  height:120px;
+  object-fit:contain;
+}
+.intro-wordmark{
+  font-size:13px;font-weight:600;
+  letter-spacing:0.3em;text-transform:uppercase;
+  color:var(--white);white-space:nowrap;
+}
+.intro-sub{
+  font-size:11px;letter-spacing:0.15em;
+  color:rgba(255,255,255,0.45);
+  text-transform:uppercase;margin-top:-10px;
+}
+
+/* ── FULLSCREEN BG ──────────────────────────────────── */
+#bg-wrap{
+  position:fixed;inset:0;z-index:0;
+  pointer-events:none;
+}
+.bg-layer{
+  position:absolute;inset:0;opacity:0;
+  background-size:cover;background-position:center;
+  transition:opacity 0.55s cubic-bezier(0.4,0,0.2,1);
+  will-change:opacity;
+}
+.bg-layer.active{opacity:1}
+#bg-wrap::after{
+  content:'';position:absolute;inset:0;
+  background:rgba(0,0,0,0.42);opacity:0;
+  transition:opacity 0.55s cubic-bezier(0.4,0,0.2,1);z-index:1;
+}
+#bg-wrap.lit::after{opacity:1}
+
+/* ── NAV ────────────────────────────────────────────── */
+#nav{
+  position:fixed;top:0;left:0;right:0;height:var(--nav-h);
+  z-index:200;display:flex;align-items:center;
+  padding:0 20px;
+  background:rgba(255,255,255,0.95);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+  transition:background 0.4s,border-color 0.4s;
+  opacity:0;/* hidden until intro done */
+}
+#nav.ready{opacity:1;transition:opacity 0.5s ease,background 0.4s,border-color 0.4s}
+#nav.dark{background:transparent;border-bottom-color:rgba(255,255,255,0.1)}
+#nav.dark .nav-logo-text,#nav.dark .nav-item{color:var(--white)}
+#nav.dark .nav-contact{color:var(--white);border-color:rgba(255,255,255,0.5)}
+#nav.dark .nav-contact:hover{background:var(--white);color:var(--black)}
+
+.nav-logo{
+  display:flex;align-items:center;gap:10px;
+  cursor:pointer;margin-right:auto;
+}
+.nav-logo-img{
+  width:28px;
+  height:28px;
+  object-fit:contain;
+  flex-shrink:0;
+  transition:transform 0.3s ease;
+}
+
+.nav-logo:hover .nav-logo-img{
+  transform:rotate(15deg);
+}
+.nav-logo-text{
+  font-size:11px;font-weight:600;
+  letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--black);transition:color 0.4s;
+  white-space:nowrap;
+  line-height:1.2;
+}
+.nav-logo-text span{display:block;font-weight:400;font-size:9px;letter-spacing:0.22em;opacity:0.6}
+
+.nav-center{display:flex;align-items:center;margin-right:16px}
+.nav-item{
+  font-size:12px;letter-spacing:0.02em;
+  color:var(--black);padding:0 12px;height:var(--nav-h);
+  display:flex;align-items:center;
+  background:none;border:none;
+  transition:color 0.4s,opacity 0.2s;cursor:pointer;
+}
+.nav-item:hover{opacity:0.45}
+.nav-contact{
+  font-size:11px;letter-spacing:0.06em;text-transform:uppercase;
+  color:var(--black);border:1px solid var(--black);
+  padding:5px 14px;background:none;
+  transition:all 0.2s;cursor:pointer;
+}
+.nav-contact:hover{background:var(--black);color:var(--white)}
+#popup-menu{
+
+    position:fixed;
+    top:72px;
+    left:20px;
+
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+
+    background:rgba(255,255,255,0.68);
+
+    backdrop-filter:blur(24px);
+    -webkit-backdrop-filter:blur(24px);
+
+    border:1px solid rgba(255,255,255,0.35);
+
+    padding:10px;
+    border-radius:18px;
+
+    opacity:0;
+    pointer-events:none;
+    transform:translateY(-10px);
+
+    transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+
+    z-index:500;
+}
+
+#popup-menu.show{
+  opacity:1;
+  pointer-events:auto;
+  transform:translateY(0);
+}
+
+#popup-menu button{
+  background:none;
+  border:none;
+
+  text-align:left;
+
+  padding:10px 14px;
+
+  font-size:12px;
+  letter-spacing:0.04em;
+  text-transform:uppercase;
+
+  cursor:pointer;
+
+  border-radius:10px;
+
+  transition:background 0.2s ease;
+}
+
+#popup-menu button:hover{
+  background:rgba(0,0,0,0.05);
+}
+
+/* ── FILTER ─────────────────────────────────────────── */
+#filter-bar{
+  position:fixed;
+  top:var(--nav-h);
+  left:0;
+  right:0;
+
+  height:var(--filter-h);
+  z-index:199;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:0 20px;
+
+  background:rgba(255,255,255,0.95);
+  backdrop-filter:blur(10px);
+
+  border-bottom:1px solid var(--border);
+
+  transition:background 0.4s,border-color 0.4s;
+
+  overflow-x:auto;
+  scrollbar-width:none;
+
+  opacity:0;
+}
+#filter-bar.ready{opacity:1;transition:opacity 0.5s ease 0.1s,background 0.4s,border-color 0.4s}
+#filter-bar::-webkit-scrollbar{display:none}
+#filter-bar.dark{background:transparent;border-bottom-color:rgba(255,255,255,0.12)}
+#filter-bar.dark .fbtn{color:rgba(255,255,255,0.55)}
+#filter-bar.dark .fbtn.on,#filter-bar.dark .fbtn:hover{color:var(--white)}
+
+.fbtn{
+  font-size:12px;letter-spacing:0.02em;
+  color:var(--gray);background:none;border:none;
+  padding:0 18px 0 0;height:var(--filter-h);
+  white-space:nowrap;transition:color 0.25s;
+  font-family:var(--f);
+}
+.fbtn:first-child{padding-left:0}
+.fbtn.on{color:var(--black);font-weight:500}
+.fbtn:hover{color:var(--black)}
+
+/* ── HOME LIST ──────────────────────────────────────── */
+#home{
+  position:relative;z-index:10;
+  padding-top:calc(var(--nav-h) + var(--filter-h));
+  min-height:100vh;
+}
+#home.bg-active .proj-row .row-name,
+#home.bg-active .proj-row .row-loc{color:var(--white)}
+#home.bg-active .proj-row{border-bottom-color:rgba(255,255,255,0.14)}
+#home.bg-active .proj-row:hover{background:rgba(255,255,255,0.06)}
+
+.proj-row{
+  display:flex;align-items:center;
+  padding:0 12vw; height:68px;
+  border-bottom:1px solid var(--border);
+  cursor:pointer;position:relative;overflow:hidden;
+  opacity:0;transform:translateY(14px);
+  transition:opacity 0.5s ease,transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94),
+    background 0.18s,border-color 0.4s;
+}
+.proj-row::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--red);transform:scaleY(0);transform-origin:center;
+  transition:transform 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+.proj-row:hover::before{transform:scaleY(1)}
+.proj-row:hover{background:rgba(0,0,0,0.025)}
+#home.bg-active .proj-row::before{background:var(--white)}
+.proj-row.in{opacity:1;transform:translateY(0)}
+
+.row-thumb{
+  width:52px;height:52px;flex-shrink:0;
+  margin-right:18px;overflow:hidden;
+  background:#e8e8e8;
+  transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+.proj-row:hover .row-thumb{transform:scale(1.08)}
+.row-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+
+.row-info{flex:1;min-width:0}
+.row-name{
+  font-size:14px;font-weight:500;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  transition:color 0.4s;
+}
+.row-loc{
+  font-size:12px;color:var(--gray);
+  margin-top:2px;transition:color 0.4s;
+}
+#home.bg-active .row-loc{color:rgba(255,255,255,0.55)}
+
+.row-type{
+  font-size:10px;letter-spacing:0.06em;text-transform:uppercase;
+  color:var(--gray);flex-shrink:0;margin-left:20px;
+  transition:color 0.4s;
+}
+#home.bg-active .row-type{color:rgba(255,255,255,0.5)}
+
+.row-arrow{
+  font-size:16px;color:var(--gray);
+  margin-left:14px;flex-shrink:0;
+  opacity:0;transform:translateX(-6px);
+  transition:opacity 0.2s,transform 0.2s;
+}
+.proj-row:hover .row-arrow{opacity:1;transform:translateX(0)}
+#home.bg-active .row-arrow{color:rgba(255,255,255,0.6)}
+
+/* ── DETAIL PAGE ────────────────────────────────────── */
+#detail{
+    position:fixed;
+    inset:0;
+    z-index:200;
+    background:var(--white);
+    overflow-y:auto;
+    overflow-x:hidden;
+
+    opacity:0;
+    transform:translateY(40px);
+
+    pointer-events:none;
+
+    transition:
+    opacity 0.45s ease,
+    transform 0.45s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+#detail.show{
+    opacity:1;
+    transform:translateY(0);
+    pointer-events:auto;
+}
+
+.detail-enter{animation:detailIn 0.6s cubic-bezier(0.25,0.46,0.45,0.94) both}
+@keyframes detailIn{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:translateY(0)}}
+
+/* detail hero */
+.d-hero{
+  width:100%;height:calc(100vh - var(--nav-h));
+  position:relative;overflow:hidden;background:#1a1a1a;
+}
+.d-hero-media{
+  position:absolute;inset:0;
+  background-size:cover;background-position:center;
+  transform:scale(1.07);
+  transition:transform 1.6s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+.d-hero-media.zoomed{transform:scale(1)}
+.d-hero-scrim{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(0,0,0,0.6) 0%,rgba(0,0,0,0.05) 60%,transparent 100%);
+}
+
+.d-nav{
+  position:absolute;top:0;left:0;right:0;
+  height:var(--nav-h);display:flex;align-items:center;
+  justify-content:space-between;padding:0 20px;z-index:10;
+}
+.d-back{
+  display:flex;align-items:center;gap:8px;
+  font-size:11px;letter-spacing:0.07em;text-transform:uppercase;
+  color:var(--white);cursor:pointer;
+  background:none;border:none;font-family:var(--f);
+  transition:opacity 0.2s;
+}
+.d-back:hover{opacity:0.6}
+
+.d-hero-foot{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:0 28px 36px;
+}
+.d-hero-name{
+  font-size:clamp(28px,5vw,68px);
+  font-weight:400;letter-spacing:-0.02em;
+  line-height:1;color:var(--white);
+  margin-bottom:8px;
+}
+.d-hero-loc{
+  font-size:14px;color:rgba(255,255,255,0.65);
+  letter-spacing:0.03em;
+}
+
+/* share row */
+.d-share-row{
+  display:flex;align-items:center;gap:20px;
+  padding:14px 28px;border-bottom:1px solid var(--border);
+}
+.d-share-link{
+  font-size:11px;letter-spacing:0.07em;text-transform:uppercase;
+  color:var(--gray);cursor:pointer;transition:color 0.2s;
+}
+.d-share-link:hover{color:var(--black)}
+
+/* meta */
+.d-meta{border-bottom:1px solid var(--border)}
+.d-meta-row{display:grid;grid-template-columns:repeat(4,1fr)}
+.d-meta-cell{
+  padding:20px 28px;
+  border-right:1px solid var(--border);
+}
+.d-meta-cell:last-child{border-right:none}
+.d-meta-label{
+  font-size:9px;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--gray);margin-bottom:6px;
+}
+.d-meta-value{font-size:13px;font-weight:500}
+
+/* body */
+.d-body{max-width:1280px;margin:0 auto}
+.d-text-block{
+  padding:52px 28px;max-width:720px;
+}
+.d-text-block p{
+  font-size:15px;line-height:1.82;color:#333;
+  margin-bottom:1.3em;
+}
+.d-text-block p:last-child{margin-bottom:0}
+
+/* gallery */
+.d-gallery-item{
+  position:relative;overflow:hidden;
+  border-top:1px solid var(--border);
+}
+.d-gallery-media{
+  width:100%;display:block;
+  transition:transform 0.65s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+.d-gallery-item:hover .d-gallery-media{transform:scale(1.02)}
+.d-gallery-cap{
+  padding:16px 28px 36px;
+  font-size:13px;line-height:1.7;color:#555;
+  max-width:760px;
+}
+.d-gallery-cap strong{
+  font-weight:700;letter-spacing:0.05em;
+  text-transform:uppercase;color:var(--black);
+}
+
+.reveal{
+  opacity:0;transform:translateY(24px);
+  transition:opacity 0.7s ease,transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+.reveal.shown{opacity:1;transform:translateY(0)}
+
+/* ── ABOUT ──────────────────────────────────────────── */
+#about-page{
+  position:fixed;inset:0;z-index:300;
+  background:var(--white);overflow-y:auto;display:none;
+}
+#about-page.show{display:block}
+/* ── NEWS ───────────────────────────────────────────── */
+#news-page{
+  position:fixed;inset:0;z-index:300;
+  background:var(--white);overflow-y:auto;display:none;
+}
+#news-page.show{display:block}
+
+.news-header{
+  position:sticky;top:0;
+  height:var(--nav-h);
+  background:rgba(255,255,255,0.95);
+  backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;z-index:10;
+}
+.news-header h1{
+  font-size:13px;font-weight:500;
+  letter-spacing:0.06em;text-transform:uppercase;
+}
+.news-list{
+  max-width:1100px;margin:0 auto;
+  padding:60px 24px 120px;
+}
+.news-item{
+  display:grid;
+  grid-template-columns:1fr 380px;
+  gap:60px;
+  align-items:start;
+  padding:52px 0;
+  border-bottom:1px solid var(--border);
+  cursor:pointer;
+  transition:opacity 0.2s;
+}
+.news-item:first-child{border-top:1px solid var(--border)}
+.news-item:hover{opacity:0.7}
+.news-item-tag{
+  font-size:10px;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--gray);margin-bottom:14px;
+}
+.news-item-date{
+  font-size:10px;letter-spacing:0.08em;
+  color:var(--gray);margin-bottom:8px;
+}
+.news-item-title{
+  font-size:clamp(24px,3vw,40px);
+  font-weight:400;letter-spacing:-0.02em;line-height:1.1;
+  margin-bottom:16px;
+}
+.news-item-excerpt{
+  font-size:14px;line-height:1.8;color:#555;
+}
+.news-item-img{
+  width:100%;aspect-ratio:16/10;
+  object-fit:cover;
+}
+.news-item-img-placeholder{
+  width:100%;aspect-ratio:16/10;
+  background:#e8e8e8;
+}
+
+/* article view */
+.news-article-hero{
+  width:100%;height:65vh;
+  object-fit:cover;display:block;
+}
+.news-article-body{
+  max-width:720px;margin:0 auto;
+  padding:60px 24px 120px;
+}
+.news-article-tag{
+  font-size:10px;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--gray);margin-bottom:16px;
+}
+.news-article-title{
+  font-size:clamp(32px,5vw,60px);
+  font-weight:400;letter-spacing:-0.03em;line-height:1.05;
+  margin-bottom:20px;
+}
+.news-article-date{
+  font-size:12px;color:var(--gray);
+  letter-spacing:0.04em;margin-bottom:48px;
+  padding-bottom:48px;border-bottom:1px solid var(--border);
+}
+.news-article-text p{
+  font-size:16px;line-height:1.9;color:#333;
+  margin-bottom:1.5em;
+}
+.news-article-text h3{
+  font-size:20px;font-weight:500;
+  margin:2em 0 0.8em;letter-spacing:-0.01em;
+}
+.news-article-gallery{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:3px;margin:48px 0;
+}
+.news-article-gallery img{
+  width:100%;aspect-ratio:4/3;object-fit:cover;
+}
+.news-article-gallery img.full{
+  grid-column:span 2;aspect-ratio:16/7;
+}
+.news-article-gallery img{
+  cursor:zoom-in;
+  transition:transform 0.45s cubic-bezier(0.34,1.56,0.64,1);
+  transform-origin:center;
+  position:relative;
+}
+.news-article-gallery img:hover{
+  transform:scale(1.04);
+  z-index:2;
+}
+.ab-hero{
+  width:100%;height:72vh;min-height:400px;
+  position:relative;overflow:hidden;
+  background:#0d0d0d;display:flex;align-items:flex-end;
+}
+.ab-hero-bg{
+  position:absolute;inset:0;
+  background:linear-gradient(140deg,#0d0d0d 0%,#1e1e1e 50%,#0a0a0a 100%);
+}
+.ab-hero-grid{
+  position:absolute;inset:0;
+  background:
+    repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(255,255,255,0.03) 59px,rgba(255,255,255,0.03) 60px),
+    repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(255,255,255,0.03) 59px,rgba(255,255,255,0.03) 60px);
+}
+.ab-hero-content{
+  position:relative;z-index:2;padding:0 28px 52px;
+}
+.ab-hero-h1{
+  font-size:clamp(44px,6.5vw,88px);
+  font-weight:400;letter-spacing:-0.03em;line-height:0.93;color:var(--white);
+}
+.ab-hero-h1 em{font-style:italic;color:rgba(255,255,255,0.38)}
+
+.ab-body{padding:0 28px 120px}
+.ab-section{border-top:1px solid var(--border);padding:60px 0}
+.ab-section-label{
+  font-size:9px;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--gray);margin-bottom:36px;
+}
+.ab-text-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px}
+.ab-text p{font-size:15px;line-height:1.82;color:#333;margin-bottom:1.2em}
+.ab-stats{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-content:start}
+.ab-stat-n{
+  font-size:60px;font-weight:300;
+  letter-spacing:-0.04em;line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+.ab-stat-l{
+  font-size:10px;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--gray);margin-top:8px;
+}
+.offices-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:40px}
+.off-city{font-size:14px;font-weight:500;margin-bottom:8px}
+.off-addr{font-size:13px;color:var(--gray);line-height:1.7}
+
+/* ── CONTACT ────────────────────────────────────────── */
+#contact-panel{
+  position:fixed;inset:0;z-index:400;
+  background:#111;color:var(--white);
+  overflow-y:auto;display:none;
+  transform:translateX(100%);
+  transition:transform 0.55s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+#contact-panel.show{display:block}
+#contact-panel.open{transform:translateX(0)}
+
+.cp-close{
+  position:fixed;top:16px;right:20px;
+  font-size:11px;letter-spacing:0.1em;text-transform:uppercase;
+  color:rgba(255,255,255,0.4);cursor:pointer;
+  background:none;border:none;font-family:var(--f);
+  transition:color 0.2s;z-index:10;
+}
+.cp-close:hover{color:var(--white)}
+.cp-inner{max-width:680px;margin:0 auto;padding:80px 40px 80px}
+.cp-h1{
+  font-size:clamp(44px,6vw,76px);
+  font-weight:400;letter-spacing:-0.03em;
+  line-height:0.93;margin-bottom:60px;
+}
+.cp-section{margin-bottom:48px}
+.cp-label{
+  font-size:9px;letter-spacing:0.14em;text-transform:uppercase;
+  color:rgba(255,255,255,0.33);margin-bottom:16px;
+}
+.cp-list{list-style:none}
+.cp-list li{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.1);font-size:13px;
+}
+.cp-list li:first-child{border-top:1px solid rgba(255,255,255,0.1)}
+.cp-tag{font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.33)}
+.cp-addr a{color:rgba(255,255,255,0.75);transition:color 0.2s}
+.cp-addr a:hover{color:var(--white)}
+.cp-offices{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.cp-city{font-size:13px;font-weight:500;margin-bottom:4px}
+.cp-office-addr{font-size:12px;color:rgba(255,255,255,0.4);line-height:1.7}
+
+/* ── RESPONSIVE ─────────────────────────────────────── */
+@media(max-width:720px){
+  .nav-item:nth-child(n+3){display:none}
+  .row-type{display:none}
+  .d-meta-row{grid-template-columns:1fr 1fr}
+  .d-meta-cell:nth-child(2){border-right:none}
+  .d-meta-cell:nth-child(3){border-top:1px solid var(--border);border-right:1px solid var(--border)}
+  .ab-text-grid{grid-template-columns:1fr}
+  .offices-grid{grid-template-columns:1fr 1fr}
+  .cp-offices{grid-template-columns:1fr}
+}
+/* PEOPLE PAGE */
+#people-page{
+    position:fixed;
+    inset:0;
+    background:#fff;
+    z-index:400;
+    overflow-y:auto;
+
+    opacity:0;
+    pointer-events:none;
+    transform:translateY(20px);
+
+    transition:
+    opacity 0.5s ease,
+    transform 0.5s ease;
+}
+
+#people-page.show{
+    opacity:1;
+    pointer-events:auto;
+    transform:translateY(0);
+}
+
+.people-header{
+    position:sticky;
+    top:0;
+    background:rgba(255,255,255,0.95);
+    backdrop-filter:blur(8px);
+    padding:16px 28px;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    z-index:10;
+}
+.people-list{
+    padding:40px 6vw 120px;
+}
+
+.person-card{
+    display:flex;
+    align-items:center;
+    gap:20px;
+
+    padding:22px 0;
+    border-bottom:1px solid #ececec;
+
+    cursor:pointer;
+
+    transition:all 0.3s ease;
+}
+
+.person-card:hover{
+    transform:translateX(8px);
+}
+
+.person-card img{
+    width:72px;
+    height:72px;
+    object-fit:cover;
+    border-radius:12px;
+}
+
+.person-card h3{
+    font-size:18px;
+    margin-bottom:4px;
+}
+
+.person-card p{
+    font-size:13px;
+    color:#777;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+}
+.back-btn{
+    display:flex;align-items:center;gap:8px;
+    font-size:11px;letter-spacing:0.07em;text-transform:uppercase;
+    color:var(--black);cursor:pointer;
+    background:none;border:none;font-family:var(--f);
+    transition:opacity 0.2s;
+    pointer-events:auto;
+}
+.back-btn:hover{opacity:0.5}
+
+/* ── LIGHTBOX ───────────────────────────────────────── */
+#lightbox{
+  position:fixed;inset:0;z-index:9999;
+  background:rgba(0,0,0,0.92);
+  display:none;
+  align-items:center;justify-content:center;
+  cursor:zoom-out;
+}
+#lightbox.show{display:flex}
+#lightbox img{
+  max-width:92vw !important;
+  max-height:92vh !important;
+  object-fit:contain !important;
+  width:auto !important;
+  height:auto !important;
+  box-shadow:0 0 60px rgba(0,0,0,0.5);
+  cursor:default;
+}
+#lightbox-close{
+  position:absolute;top:20px;right:24px;
+  font-size:11px;letter-spacing:0.1em;text-transform:uppercase;
+  color:rgba(255,255,255,0.5);
+  background:none;border:none;
+  font-family:var(--f);cursor:pointer;
+  transition:color 0.2s;
+}
+#lightbox-close:hover{color:#fff}
+#lightbox-prev,#lightbox-next{
+  position:absolute;top:50%;transform:translateY(-50%);
+  font-size:24px;color:rgba(255,255,255,0.5);
+  background:none;border:none;
+  font-family:var(--f);cursor:pointer;
+  transition:color 0.2s;padding:20px;
+}
+#lightbox-prev:hover,#lightbox-next:hover{color:#fff}
+#lightbox-prev{left:16px}
+#lightbox-next{right:16px}
+#lightbox-counter{
+  position:absolute;bottom:20px;left:50%;transform:translateX(-50%);
+  font-size:11px;letter-spacing:0.08em;color:rgba(255,255,255,0.4);
+}
+</style>
+</head>
+<body>
+
+<!-- INTRO OVERLAY -->
+<div id="intro">
+  <div class="intro-logo-wrap">
+    <img src="iam-assets/logo.png" class="intro-logo-img" alt="IAM Logo">
+    <div class="intro-wordmark">PT Indo Artha Mandiri</div>
+    <div class="intro-sub">Architecture &amp; Interior Design</div>
+  </div>
+</div>
+
+<!-- BG LAYERS -->
+<div id="bg-wrap"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-logo" onclick="togglePopupMenu()">
+   <img src="iam-assets/logo.png" class="nav-logo-img" alt="IAM Logo">
+    <div class="nav-logo-text">
+      PT Indo Artha Mandiri
+      <span>Architecture &amp; Interior Design</span>
+    </div>
+  </div>
+ 
+  <button class="nav-contact" onclick="openContact()">Contact</button>
+  <div id="popup-menu">
+
+  <button onclick="document.querySelector('[data-f=&quot;all&quot;]').click()">
+  Projects
+</button>
+  <button onclick="openAbout()">About</button>
+  <button onclick="openNews()">News</button>
+  <button onclick="openPeople()">People</button>
+
+
+</div>
+</nav>
+
+<!-- FILTER -->
+<div id="filter-bar">
+  <button class="fbtn on" data-f="all">+All</button>
+  <button class="fbtn" data-f="architecture">+Architecture</button>
+  <button class="fbtn" data-f="interiors">+Interiors</button>
+  <button class="fbtn" data-f="landscape">+Landscape</button>
+</div>
+
+<!-- HOME -->
+<div id="home"><div id="proj-list"></div></div>
+
+<!-- DETAIL -->
+<div id="detail"></div>
+<div id="people-page">
+
+  <div class="people-header">
+    <button class="back-btn" onclick="document.getElementById('people-page').classList.remove('show')">
+  ← All Projects
+</button>
+    <h1>People</h1>
+  </div>
+
+  <div class="people-list">
+
+    <div class="person-card" onclick="openPerson(0)">
+      <img src="iam-assets/img1.jpg">
+      <div>
+        <h3>William Alirudin</h3>
+        <p>Founder & Director</p>
+      </div>
+    </div>
+
+    <div class="person-card" onclick="openPerson(1)">
+      <img src="iam-assets/img2.jpg">
+      <div>
+        <h3>Arinto Nurwidyawan</h3>
+        <p>Project Manager</p>
+      </div>
+    </div>
+
+    <div class="person-card" onclick="openPerson(2)">
+      <img src="iam-assets/img3.jpg">
+      <div>
+        <h3>Andika Hendra</h3>
+        <p>Site Manager</p>
+      </div>
+    </div>
+
+    <div class="person-card" onclick="openPerson(3)">
+      <img src="iam-assets/img4.jpg">
+      <div>
+        <h3>Jonathan Erik</h3>
+        <p>Architect</p>
+      </div>
+    </div>
+
+    <div class="person-card" onclick="openPerson(4)">
+      <img src="iam-assets/img5.jpg">
+      <div>
+        <h3>Annisa Nuraziza</h3>
+        <p>Architect</p>
+      </div>
+    </div>
+
+    <div class="person-card" onclick="openPerson(5)">
+      <img src="iam-assets/img6.jpg">
+      <div>
+        <h3>Venny Felicia</h3>
+        <p>Architect</p>
+      </div>
+    </div>
+
+    <div class="person-card" onclick="openPerson(6)">
+      <img src="iam-assets/img7.jpg">
+      <div>
+        <h3>Andrian</h3>
+        <p>Drafter</p>
+      </div>
+    </div>
+
+    <div class="person-card" onclick="openPerson(7)">
+      <img src="iam-assets/img8.jpg">
+      <div>
+        <h3>Benny Pabuari</h3>
+        <p>Field Supervisor</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+<!-- ABOUT -->
+<div id="about-page">
+  <div class="d-back" style="position:fixed;top:16px;left:20px;z-index:10;color:#fff;" onclick="closeAbout()">
+    <span>&#8592;</span> Back
+  </div>
+  <div class="ab-hero">
+  <div class="ab-hero-bg" style="
+    background-image: url('iam-assets/about.jpg');
+    background-size: cover;
+    background-position: center;
+  "></div>
+  <div class="ab-hero-scrim" style="
+    position:absolute;inset:0;
+    background:linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 60%, rgba(0,0,0,0.15) 100%);
+  "></div>
+  <div class="ab-hero-content">
+    <h1 class="ab-hero-h1">We shape<br>Indonesia&rsquo;s<br><em>built future</em></h1>
+  </div>
+</div>
+  <div class="ab-body">
+    <div class="ab-section reveal">
+      <p class="ab-section-label">About the firm</p>
+      <div class="ab-text-grid">
+        <div class="ab-text">
+          <p>PT Indo Artha Mandiri is an architecture and interior design practice based in Jakarta, North Jakarta. The studio works across architecture, interior design, and landscape — delivering projects that are rigorously designed, precisely documented, and built to endure.</p>
+          <p>Our portfolio spans religious and civic architecture, high-end residential design, office interiors for multinational clients, and landscape installations for government institutions. Every project begins from a single premise: design should serve its users completely.</p>
+          <p>The studio has built a reputation for high-quality 3D visualisation and design documentation, enabling clients to fully understand and commit to a design before a single wall is built. From concept through construction, we remain present at every stage.</p>
+        </div>
+        <div class="ab-stats">
+          <div><div class="ab-stat-n" data-target="20">0</div><div class="ab-stat-l">Projects Completed</div></div>
+          <div><div class="ab-stat-n" data-target="5">0</div><div class="ab-stat-l">Years of Practice</div></div>
+          <div><div class="ab-stat-n" data-target="10">0</div><div class="ab-stat-l">Clients Served</div></div>
+          <div><div class="ab-stat-n" data-target="3">0</div><div class="ab-stat-l">Disciplines</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="ab-section reveal">
+      <p class="ab-section-label">Studio</p>
+      <div class="offices-grid">
+        <div>
+          <div class="off-city">Jakarta</div>
+          <div class="off-addr">Ruko Gading Kirana Blok A6 A No. 16<br>Jl. Artha Gading Boulevard<br>Kelapa Gading Barat<br>Jakarta Utara 14240<br>+62 21 4587 4577</div>
+        </div>
+        <div>
+          <div class="off-city">Email</div>
+          <div class="off-addr">studio@indoarthamandiri.co.id<br>newprojects@indoarthamandiri.co.id<br>press@indoarthamandiri.co.id</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- NEWS PAGE -->
+<div id="news-page">
+  <div class="news-header">
+    <button class="back-btn" onclick="closeNews()">← Back</button>
+    <h1>News</h1>
+    <div></div>
+  </div>
+  <div id="news-content">
+    <!-- diisi JS -->
+  </div>
+</div>
+<!-- CONTACT -->
+<div id="contact-panel">
+  <button class="cp-close" onclick="closeContact()">Close &#x2715;</button>
+  <div class="cp-inner">
+    <h1 class="cp-h1">Get in<br>Touch</h1>
+    <div class="cp-section">
+      <p class="cp-label">Email</p>
+      <ul class="cp-list">
+        <li><span class="cp-tag">New Projects</span><span class="cp-addr"><a href="mailto:newprojects@indoarthamandiri.co.id">newprojects@indoarthamandiri.co.id</a></span></li>
+        <li><span class="cp-tag">Press</span><span class="cp-addr"><a href="mailto:press@indoarthamandiri.co.id">press@indoarthamandiri.co.id</a></span></li>
+        <li><span class="cp-tag">Careers</span><span class="cp-addr"><a href="mailto:careers@indoarthamandiri.co.id">careers@indoarthamandiri.co.id</a></span></li>
+        <li><span class="cp-tag">General</span><span class="cp-addr"><a href="mailto:studio@indoarthamandiri.co.id">studio@indoarthamandiri.co.id</a></span></li>
+      </ul>
+    </div>
+    <div class="cp-section">
+      <p class="cp-label">Studio</p>
+      <div class="cp-offices">
+        <div>
+          <div class="cp-city">Jakarta</div>
+          <div class="cp-office-addr">Ruko Gading Kirana Blok A6 A No. 16<br>Jl. Artha Gading Boulevard<br>Kelapa Gading Barat<br>Jakarta Utara 14240</div>
+        </div>
+        <div>
+          <div class="cp-city">Phone</div>
+          <div class="cp-office-addr">+62 21 4587 4577</div>
+        </div>
+      </div>
+    </div>
+    <div class="cp-section">
+      <p class="cp-label">Social</p>
+      <ul class="cp-list">
+        <li><span class="cp-tag">Instagram</span><span class="cp-addr"><a href="#">@indoarthamandiri</a></span></li>
+        <li><span class="cp-tag">LinkedIn</span><span class="cp-addr"><a href="#">PT Indo Artha Mandiri</a></span></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   PROJECT DATA
+   img: path relative to index.html (inside iam-website/)
+═══════════════════════════════════════════════════════ */
+var PROJECTS = [
+  /* ─── ARCHITECTURE ─── */
+  {
+    id:1, name:"St. John Paul II Church", loc:"Brayut, Sleman, Indonesia",
+    type:"architecture", typeLabel:"Architecture",
+    year:"2024", size:"1,875.85 m\u00B2",
+    client:"St. John Paul II Parish", status:"On Going",
+    img:"iam-assets/church-4.jpg",
+    bg:"linear-gradient(160deg,#1a1a1a 0%,#2a2420 50%,#181814 100%)",
+    gallery:[
+      {img:"iam-assets/church-3.jpg", cap:"MASS HALL", desc:"The main worship hall is conceived as a luminous vessel — a generous nave bathed in natural light filtered through clerestory glazing, creating a contemplative atmosphere that shifts with the time of day."},
+      {img:"iam-assets/church-4.jpg", cap:"EXTERIOR", desc:"The church stands as a landmark within the Brayut community. The facade articulates the program within through a hierarchy of solid and void, rooted in local materials and tropical climate response."},
+      {img:"iam-assets/church-5.jpg", cap:"SPIRIT", desc:"Every spatial decision is guided by the spiritual purpose of the building. Proportions, material warmth, and the quality of light work together to produce an architecture of quiet dignity appropriate to a place of worship."}
+    ],
+    desc:"<p>The St. John Paul II Church in Brayut, Sleman, is a new place of worship for one of Yogyakarta's growing Catholic communities. At 1,875.85 m\u00B2, the project encompasses the main worship hall, sacristy, parish offices, and landscaped forecourt.</p><p>The design is grounded in the theology of sacred space: natural light is treated as a spiritual material, entering the nave through carefully positioned clerestory openings and filtered through the structural rhythm of the walls. Material choices favour warmth and permanence, with local stone and timber detailing that connects the building to its Javanese context.</p><p>The project is currently under construction and is expected to serve as a generational anchor for the Brayut parish community.</p>",
+    tags:["Religious","Civic","Architecture","Ongoing"]
+  },
+  {
+    id:2, name:"Artha Gading Villa J8", loc:"Jakarta, Indonesia",
+    type:"architecture", typeLabel:"Architecture",
+    year:"2024", size:"600 m\u00B2",
+    client:"Private — Mr. W", status:"Completed",
+    img:"iam-assets/f51-p16.jpg",
+    bg:"linear-gradient(160deg,#1a1510 0%,#2c2318 50%,#181208 100%)",
+    gallery:[
+      {img:"iam-assets/f51-p18.jpg", cap:"LIVING", desc:"The ground floor resolves around a generous open-plan living and dining space that opens fully to the garden, blurring the boundary between inside and outside in a manner suited to Jakarta's tropical climate."},
+      {img:"iam-assets/f51-p20.jpg", cap:"MATERIAL", desc:"A restrained palette of natural stone, timber, and white plaster defines the interior language. Every surface is selected for its texture and how it ages — materials that improve with time rather than requiring replacement."},
+      {img:"iam-assets/f51-3b.jpg", cap:"PRIVACY", desc:"The upper levels retreat from the street, prioritising privacy and panoramic views while maintaining the formal coherence of the street facade. Landscape terracing creates private outdoor rooms at each level."}
+    ],
+    desc:"<p>Artha Gading Villa J8 is a 600 m\u00B2 private residence in the Artha Gading district of North Jakarta. The brief called for a home that balanced the scale of the plot with a sense of intimacy and refuge from the city.</p><p>The design is organised around a series of layered thresholds: from the street, through a landscaped forecourt, into a generous double-height living space that opens fully to the private garden. Bedrooms are positioned to the upper floors, each with private terracing and carefully controlled views.</p><p>Material selection prioritises permanence and warmth, with natural stone, solid timber joinery, and white-rendered walls forming a palette that is timeless rather than fashionable. The project was completed in 2024.</p>",
+    tags:["Residential","Private","Architecture"]
+  },
+  {
+    id:3, name:"F51 Rooftop", loc:"Jakarta, Indonesia",
+    type:"architecture", typeLabel:"Architecture",
+    year:"2023", size:"156 m\u00B2",
+    client:"Private — Mr. A", status:"Completed",
+    img:"iam-assets/f51-1.jpg",
+    bg:"linear-gradient(160deg,#101820 0%,#182030 50%,#0c1420 100%)",
+    gallery:[
+      {img:"iam-assets/f51-2.jpg", cap:"ROOFTOP", desc:"The rooftop intervention transforms an underutilised roof terrace into a fully resolved residential level, providing additional living area, a private dining terrace, and panoramic views across the Jakarta skyline."},
+      {img:"iam-assets/f51-5.jpg", cap:"DETAIL", desc:"Structural steel and glass are used to maximise the sense of lightness at the uppermost level, with frameless glazing and slim steel profiles ensuring views remain unobstructed from every position within the space."},
+      {img:"iam-assets/f51-6.jpg", cap:"SPACE", desc:"The spatial planning resolves the challenge of working within an existing structural grid, introducing a new mezzanine zone that adds usable area without disrupting the structural integrity of the existing building."}
+    ],
+    desc:"<p>F51 Rooftop is a 156 m\u00B2 rooftop extension to an existing residential property in Jakarta. The project transforms an underutilised roof terrace into a fully habitable level, adding a living area, outdoor dining terrace, and panoramic sky lounge to the home.</p><p>Working within the constraints of the existing structural grid, the design introduces a lightweight steel-and-glass volume that sits lightly on the existing building. The material language is deliberately contemporary, contrasting with the existing structure below while maintaining a unified architectural character.</p><p>The project demonstrates that significant spatial value can be recovered from overlooked parts of an existing building through precise and inventive design.</p>",
+    tags:["Residential","Extension","Architecture"]
+  },
+  {
+    id:4, name:"Kodamar 3 Residence", loc:"Jakarta, Indonesia",
+    type:"architecture", typeLabel:"Architecture",
+    year:"2023", size:"1,080 m\u00B2",
+    client:"Private — Mr. A", status:"Completed",
+    img:"iam-assets/kodam1.jpg",
+    bg:"linear-gradient(160deg,#141010 0%,#201818 50%,#100c0c 100%)",
+    gallery:[
+      {img:"iam-assets/kodam2.jpg", cap:"SCALE", desc:"At 1,080 m\u00B2, the Kodamar 3 Residence is designed as a full-family compound, accommodating multiple generations under a single architectural vision while providing each household unit with its own distinct zone of privacy."},
+      {img:"iam-assets/kodam4.jpg", cap:"LANDSCAPE", desc:"The landscape design integrates with the architectural plan from the earliest stage of design, with gardens, water features, and planted terraces woven throughout the ground floor and perimeter of the site."},
+      {img:"iam-assets/kodam3.jpg", cap:"INTERIOR", desc:"Interiors are defined by a warm, layered palette of natural materials — rich timber ceilings, stone flooring, and hand-crafted joinery that give the residence its sense of settled permanence."}
+    ],
+    desc:"<p>The Kodamar 3 Residence is a 1,080 m\u00B2 family compound in Jakarta, designed to accommodate a multi-generational household while maintaining a coherent architectural identity across the entire site.</p><p>The programme is resolved as a series of interlocking volumes arranged around a central courtyard garden. Each volume contains a distinct household unit — with its own entrance, living zone, and private outdoor space — while sharing a collective identity through material, proportional system, and landscaping strategy.</p><p>The project was completed in 2023 and demonstrates the studio's ability to manage large-scale residential briefs with the same attention to detail found in smaller commissions.</p>",
+    tags:["Residential","Architecture","Compound"]
+  },
+  {
+    id:5, name:"Damage Control Simulator", loc:"Jakarta, Indonesia",
+    type:"architecture", typeLabel:"Architecture",
+    year:"2023", size:"1,245.86 m\u00B2",
+    client:"Indonesian Navy", status:"Completed",
+    img:"iam-assets/DCS1.jpg",
+    bg:"linear-gradient(160deg,#0a1020 0%,#101828 50%,#080c18 100%)",
+    gallery:[
+      {img:"iam-assets/DCS2.jpg", cap:"PROGRAM", desc:"The facility houses a full-scale simulation environment enabling naval personnel to train in damage control procedures under realistic, controlled conditions without the hazards of live-fire or flooding exercises at sea."},
+      {img:"iam-assets/DCS3.jpg", cap:"STRUCTURE", desc:"The structural system is engineered to withstand the repeated physical stress of training exercises, with reinforced wall systems, flood-rated floor finishes, and specialist mechanical systems integrated throughout."}
+    ],
+    desc:"<p>The Damage Control Simulator is a 1,245.86 m\u00B2 specialist training facility for the Indonesian Navy, designed to simulate the emergency conditions encountered aboard naval vessels — including flooding, fire, and structural damage.</p><p>The architectural challenge was to create a building that functions as both a credible training environment and a durable, operationally resilient facility. The interior is designed to replicate the spatial character of a naval vessel&#8217;s below-deck zones, with narrow corridors, low ceilings, watertight door systems, and materials that can withstand repeated water and fire-suppression exercises.</p><p>The project required close coordination with naval engineers, safety specialists, and simulation technology providers. It was completed and handed over in 2023.</p>",
+    tags:["Civic","Government","Architecture","Navy"]
+  },
+
+  /* ─── INTERIORS ─── */
+  {
+    id:6, name:"IAM Headquarters \u2014 The Plaza", loc:"Jakarta, Indonesia",
+    type:"interiors", typeLabel:"Interiors",
+    year:"2025", size:"122.4 m\u00B2",
+    client:"PT Indo Artha Mandiri", status:"Completed",
+    img:"iam-assets/plaza-reception.jpg",
+    bg:"linear-gradient(160deg,#1a1410 0%,#2a2018 50%,#181208 100%)",
+    gallery:[
+      {img:"iam-assets/plaza-entrance.jpg", cap:"ENTRANCE", desc:"The main entrance introduces the studio's identity through a restrained material palette of warm-toned fluted panels, ambient LED detailing, and a bespoke reception setting that communicates professionalism without ostentation."},
+      {img:"iam-assets/plaza-reception.jpg", cap:"RECEPTION & LOUNGE", desc:"Reception and lounge functions are unified within a single open space, enabling visitors to experience the studio's portfolio on display screens while waiting. The floor plan encourages informal conversation alongside formal reception."},
+      {img:"iam-assets/plaza-lounge.jpg", cap:"MEETING LOUNGE", desc:"Two meeting lounge alcoves provide semi-private consultation spaces for client presentations and internal reviews, finished with soft acoustic panels and warm artificial lighting calibrated for design review conditions."},
+      {img:"iam-assets/plaza-meeting.jpg", cap:"MEETING ROOM", desc:"The main meeting room accommodates up to ten people around a single stone-topped table, with a full-height display wall for presentations and whiteboards for working sessions. Frosted glass partitions allow natural light to penetrate while maintaining acoustic separation."},
+      {img:"iam-assets/plaza-isometric.jpg", cap:"SPATIAL ORGANISATION", desc:"The isometric plan reveals the precision of the space planning: every square metre is accounted for, with clear circulation routes, dedicated workspace zones, and director offices positioned to maximise natural light from the tower facade."},
+      {img:"iam-assets/plaza-floorplan.jpg", cap:"FLOOR PLAN", desc:"The 122.4 m\u00B2 tenancy at The Plaza, Jl. MH. Thamrin, Jakarta, is resolved across a single level with a total of ten distinct programme areas including reception, lounge, meeting rooms, staff area, two directors' offices, pantry, and corridor."}
+    ],
+    desc:"<p>The IAM Headquarters at The Plaza is the studio's own office, occupying 122.4 m\u00B2 on a high floor of the Thamrin tower. The brief was self-written: create a working environment that reflects the studio's design sensibility, supports focused creative work, and makes a strong impression on visiting clients.</p><p>The spatial organisation resolves a complex programme into a single open level, with reception and lounge at the entrance, meeting rooms positioned centrally, and the two directors' offices placed at the perimeter to access natural light and city views. The staff workspace occupies a central position, flanked by the material library and storage.</p><p>Materials are deliberately warm and tactile: fluted timber wall panels, honed stone surfaces, and brass accent detailing. The project was completed in December 2025.</p>",
+    tags:["Office Interior","Self-Commissioned","Interiors"]
+  },
+  {
+    id:7, name:"ASELSAN Office \u2014 Astra Tower", loc:"Jakarta, Indonesia",
+    type:"interiors", typeLabel:"Interiors",
+    year:"2024", size:"135 m\u00B2",
+    client:"ASELSAN Indonesia", status:"Completed",
+    img:"iam-assets/aselsan-reception.jpg",
+    bg:"linear-gradient(160deg,#101820 0%,#182030 50%,#0a1020 100%)",
+    gallery:[
+      {img:"iam-assets/aselsan-entrance.jpg", cap:"ENTRANCE", desc:"The entrance facade, viewed from the corridor, communicates ASELSAN's identity immediately through the corporate signage, Turkish and Indonesian flags, and a display showcase of scale models of the company's defence systems."},
+      {img:"iam-assets/aselsan-reception.jpg", cap:"RECEPTION", desc:"The reception desk in dark grey marble with oak accents forms the spatial centrepiece, with the ASELSAN Indonesia logo rendered in three-dimensional lettering on the wall behind. A pedestal showcase of product models occupies the right zone of the reception space."},
+      {img:"iam-assets/aselsan-meeting.jpg", cap:"MEETING ROOM", desc:"The meeting room accommodates eight to ten people around a solid-oak conference table with integrated AV connectivity. The ASELSAN Indonesia logo is prominently displayed on the feature wall, with the Astra Tower cityscape forming the backdrop through full-height glazing."},
+      {img:"iam-assets/aselsan-director.jpg", cap:"DIRECTOR'S ROOM", desc:"The director's office provides a refined, private working environment with a glazed city view, a solid black executive desk, and a bookshelf unit displaying the company's product portfolio. Adjacent lounge seating facilitates informal discussions without requiring a formal meeting room."},
+      {img:"iam-assets/aselsan-staff.jpg", cap:"STAFF AREA", desc:"The open staff area is designed for focused technical work, with ergonomic workstations, a central planting element, and views across the Sudirman corridor. A casual discussion zone with sofas and side tables provides an informal alternative to the meeting room."}
+    ],
+    desc:"<p>The ASELSAN Indonesia Office at Astra Tower is a 135 m\u00B2 corporate tenancy designed to represent one of Turkey's largest defence electronics companies in its Indonesian headquarters. The brief required a space that projected corporate authority, displayed the company's product range, and supported both formal client meetings and day-to-day technical work.</p><p>The design centres on a dramatic reception with product display pedestals, corporate signage, and national flags — creating a strong first impression that communicates the company's identity before a word is spoken. Meeting and director's rooms are located behind, with the open staff area positioned to maximise natural light from the tower's glazed perimeter.</p><p>The project was completed in 2024 and represents the first of IAM's ongoing relationship with ASELSAN Indonesia.</p>",
+    tags:["Office Interior","Corporate","Defence","Interiors"]
+  },
+  {
+    id:8, name:"ROKETSAN Office \u2014 Astra Tower", loc:"Jakarta, Indonesia",
+    type:"interiors", typeLabel:"Interiors",
+    year:"2024", size:"135.6 m\u00B2",
+    client:"ROKETSAN Indonesia", status:"Completed",
+    img:"iam-assets/roket-reception.jpg",
+    bg:"linear-gradient(160deg,#101410 0%,#181e18 50%,#0c100c 100%)",
+    gallery:[
+      {img:"iam-assets/roket-reception.jpg", cap:"RECEPTION", desc:"The ROKETSAN reception is anchored by a dramatic curved granite desk set against the company's backlit logo wall. The space commands attention from the moment of entry, projecting the confidence of a world-leading defence company."},
+      {img:"iam-assets/roket-lounge.jpg", cap:"LOUNGE", desc:"A generous lounge zone with modular sofas and acoustic partition screens creates a flexible informal meeting space that also functions as a client waiting area. The city panorama from Level 31 of Menara Astra forms the backdrop."},
+      {img:"iam-assets/roket-staff.jpg", cap:"STAFF AREA", desc:"The staff workstations are positioned along the outer glazed perimeter, providing maximum natural light for technical work. Product photography and military posters line the inner wall, reinforcing brand identity at every turn."},
+      {img:"iam-assets/roket-director.jpg", cap:"DIRECTOR'S ROOM", desc:"The director's office maximises the panoramic floor-to-ceiling views at the building's curved corner, with a lightweight executive desk and informal visitor seating creating a room that communicates both authority and approachability."},
+      {img:"iam-assets/roket-meeting.jpg", cap:"MEETING ROOM", desc:"The meeting room features a custom pendant light installation, conference table for ten, and a double-sided display configuration that allows presentations to both the table and through to the staff area via transparent partitions."}
+    ],
+    desc:"<p>The ROKETSAN Office at Menara Astra, Level 31, is a 135.6 m\u00B2 corporate tenancy designed for Turkey's leading rocket and missile systems manufacturer. Occupying a dramatic curved corner of the tower, the space benefits from panoramic views across the Jakarta skyline — a setting that needed to be matched by the quality of the interior design.</p><p>The design was developed around ROKETSAN's strong brand identity: monochromatic, bold, and technically precise. The reception features a curved reception desk in dark granite with backlit corporate signage, while the lounge provides an informal zone for pre-meeting conversations. Product photography and branded materials are integrated throughout, ensuring the company's identity is unmistakable.</p><p>The project was delivered in 2024 and demonstrates IAM's capability in designing high-specification corporate environments for international defence clients.</p>",
+    tags:["Office Interior","Corporate","Defence","Interiors"]
+  },
+  {
+    id:9, name:"ASELSAN Office Expansion \u2014 Astra Tower", loc:"Jakarta, Indonesia",
+    type:"interiors", typeLabel:"Interiors",
+    year:"2025", size:"213.1 m\u00B2",
+    client:"ASELSAN Indonesia", status:"On Going",
+    img:"iam-assets/asexp-display.jpg",
+    bg:"linear-gradient(160deg,#0e1520 0%,#16202e 50%,#0a1018 100%)",
+    gallery:[
+      {img:"iam-assets/asexp-reception.jpg", cap:"RECEPTION & LOUNGE", desc:"The expanded reception resolves the original single tenancy into a dual-zone space accommodating both the existing ASELSAN Indonesia office and a new adjacent unit. A unified design language connects both spaces while giving each a distinct spatial identity."},
+      {img:"iam-assets/asexp-display.jpg", cap:"DISPLAY CORRIDOR", desc:"A dedicated product showcase corridor runs through the expansion zone, housing scale models and wall-mounted graphics representing ASELSAN's full product family — creating an immersive brand environment for visiting delegation and procurement officials."},
+      {img:"iam-assets/asexp-meeting.jpg", cap:"MEETING ROOM", desc:"The expanded meeting room accommodates larger delegation meetings, with improved AV infrastructure, full-perimeter acoustic treatment, and a view directly onto the Sudirman financial district below."},
+      {img:"iam-assets/asexp-staff.jpg", cap:"STAFF AREA", desc:"A significantly expanded staff area accommodates the growing ASELSAN Indonesia team, with twelve dedicated workstations, two informal discussion areas, and dedicated utility space for document storage and printing."},
+      {img:"iam-assets/asexp-staff2.jpg", cap:"EXPANSION", desc:"The overall 213.1 m\u00B2 floor area represents a 58% expansion of the original tenancy, reflecting ASELSAN Indonesia's growing operational footprint in the country. Design and documentation are currently underway."}
+    ],
+    desc:"<p>Following the success of the original ASELSAN Indonesia office completed in 2024, PT Indo Artha Mandiri was commissioned to design an expansion of the tenancy at Astra Tower from 135 m\u00B2 to 213.1 m\u00B2 — incorporating an adjacent unit into a unified, expanded corporate environment.</p><p>The expansion retains the design language of the original space while introducing new programme elements: an enlarged meeting room for delegation visits, a dedicated product showcase corridor, an expanded staff area, and a new director's suite. The transition between old and new is handled through shared material language and a continuous ceiling treatment that reads the two units as a single space.</p><p>The project is currently in design development and is expected to be completed in mid-2025.</p>",
+    tags:["Office Interior","Corporate","Expansion","Ongoing"]
+  },
+
+  /* ─── LANDSCAPE ─── */
+  {
+    id:10, name:"DISSENLEKAL Garden", loc:"TNI Headquarters, Jakarta",
+    type:"landscape", typeLabel:"Landscape",
+    year:"2024", size:"79.21 m\u00B2",
+    client:"Indonesian Navy (TNI AL)", status:"Completed",
+    img:"iam-assets/taman1.jpg",
+    bg:"linear-gradient(160deg,#0a1a0a 0%,#122212 50%,#081008 100%)",
+    gallery:[
+      {img:"iam-assets/taman2.jpg", cap:"GARDEN", desc:"The DISSENLEKAL Garden provides a contemplative green space within the grounds of the Indonesian Navy's headquarters, offering personnel a moment of natural respite within the formal institutional setting."},
+      {img:"iam-assets/taman3.jpg", cap:"PLANTING", desc:"Planting design prioritises low-maintenance tropical species adapted to Jakarta's climate and the partial shade conditions of the courtyard location. Plant selection emphasises foliage texture and layered growth habit over seasonal colour."}
+    ],
+    desc:"<p>The DISSENLEKAL Garden at the Indonesian Navy headquarters is a 79.21 m\u00B2 landscape installation providing a curated green courtyard within the institutional grounds of TNI AL in Jakarta. The project was commissioned to improve the environmental quality and wellbeing of the working environment for naval personnel.</p><p>The design works within a constrained footprint to create a multi-layered garden with defined planting zones, a central paved gathering area, and perimeter planting beds that buffer the space from the surrounding institutional architecture. All plant species were selected for their adaptability to the local microclimate and their low maintenance requirements.</p><p>The project was completed in 2024 and represents IAM's capability to deliver landscape design alongside its architectural and interior work.</p>",
+    tags:["Landscape","Government","Institutional","Navy"]
+  }
+];
+const peopleData = [
+
+{
+name:"William Alirudin",
+role:"Founder & Director",
+image:"iam-assets/img1.jpg",
+bio:`
+William Alirudin founded PT Indo Artha Mandiri with a vision of building a multidisciplinary design and construction company rooted in professionalism, precision, and long-term trust. Before establishing the firm’s architectural and construction division in 2020, he had extensive experience working alongside the Indonesian Navy and strategic institutional partners.
+
+Under his leadership, the company has expanded into a national and multinational practice specializing in architecture, interior design, and civil construction. His direction emphasizes reliability, execution quality, and client-oriented development.
+`
+},
+
+{
+name:"Arinto Nurwidyawan",
+role:"Project Manager",
+image:"iam-assets/img2.jpg",
+bio:`
+Arinto Nurwidyawan has been part of PT Indo Artha Mandiri since 2020 and serves as the company’s Project Manager. As one of the key figures within the firm, he oversees project coordination, execution flow, scheduling, and communication between consultants, contractors, and clients.
+
+Known for his structured leadership and practical problem-solving approach, he plays an essential role in ensuring every project is delivered efficiently and professionally.
+`
+},
+
+{
+name:"Andika Hendra",
+role:"Site Manager",
+image:"iam-assets/img3.jpg",
+bio:`
+Andika Hendra joined PT Indo Artha Mandiri in 2024 as Site Manager. Graduating from Mercu Buana University with a background in Civil Engineering, he is responsible for supervising field operations, construction quality, and technical coordination on site.
+
+His understanding of structural execution and field management allows projects to maintain both technical accuracy and construction efficiency.
+`
+},
+
+{
+name:"Jonathan Erik",
+role:"Architect",
+image:"iam-assets/img4.jpg",
+bio:`
+Jonathan Erik joined PT Indo Artha Mandiri in 2021 after graduating from Tarumanagara University. His design approach focuses on balancing client satisfaction with detail-oriented architectural solutions.
+
+He believes architecture should not only fulfill functional requirements, but also create spatial experiences with clarity, precision, and thoughtful execution.
+`
+},
+
+{
+name:"Annisa Nuraziza",
+role:"Architect",
+image:"iam-assets/img5.jpg",
+bio:`
+Annisa Nuraziza joined the studio in 2022 after graduating from Brawijaya University. Her design character is recognized through meticulous detailing and decorative touches that enrich the overall spatial atmosphere.
+
+She approaches each project with sensitivity toward materials, textures, and subtle elements that often become the defining identity of a space.
+`
+},
+
+{
+name:"Venny Felicia",
+role:"Architect",
+image:"iam-assets/img6.jpg",
+bio:`
+Venny Felicia joined PT Indo Artha Mandiri in 2024 after completing her studies at Tarumanagara University. Her work contributes to the studio’s architectural development through adaptive design thinking and collaborative project exploration.
+
+She is involved in both conceptual and technical phases of projects within the practice.
+`
+},
+
+{
+name:"Andrian",
+role:"Drafter",
+image:"iam-assets/img7.jpg",
+bio:`
+Andrian supports the architectural and construction workflow through technical drafting and drawing development. His role is essential in translating design concepts into coordinated technical documentation for project execution.
+
+His precision and consistency help maintain clarity throughout the production process.
+`
+},
+
+{
+name:"Benny Pabuari",
+role:"Field Supervisor",
+image:"iam-assets/img8.jpg",
+bio:`
+Benny Pabuari is responsible for on-site supervision and daily construction monitoring. He ensures field implementation aligns with project drawings, quality standards, and operational targets.
+
+His practical understanding of construction workflows contributes to smooth coordination between the design and execution teams.
+`
+}
+
+];
+
+/* ═══════════════════════════════════════════════════════
+   BACKGROUND LAYERS
+═══════════════════════════════════════════════════════ */
+var bgWrap = document.getElementById("bg-wrap");
+var hoverTimer = null;
+
+function buildBgLayers(){
+  PROJECTS.forEach(function(p){
+    var el = document.createElement("div");
+    el.className = "bg-layer";
+    el.dataset.id = p.id;
+    if(p.img){
+      el.style.backgroundImage = "url("+p.img+")";
+      el.style.backgroundSize = "cover";
+      el.style.backgroundPosition = "center";
+    } else {
+      el.style.background = p.bg;
+    }
+    bgWrap.appendChild(el);
+  });
+}
+
+function activateBg(id){
+  clearTimeout(hoverTimer);
+  document.querySelectorAll(".bg-layer").forEach(function(l){
+    l.classList.toggle("active", Number(l.dataset.id)===id);
+  });
+  bgWrap.classList.add("lit");
+  document.getElementById("home").classList.add("bg-active");
+  document.getElementById("nav").classList.add("dark");
+  document.getElementById("filter-bar").classList.add("dark");
+}
+function deactivateBg(){
+  hoverTimer = setTimeout(function(){
+    document.querySelectorAll(".bg-layer").forEach(function(l){l.classList.remove("active")});
+    bgWrap.classList.remove("lit");
+    document.getElementById("home").classList.remove("bg-active");
+    document.getElementById("nav").classList.remove("dark");
+    document.getElementById("filter-bar").classList.remove("dark");
+  },110);
+}
+
+/* ═══════════════════════════════════════════════════════
+   RENDER LIST
+═══════════════════════════════════════════════════════ */
+var currentFilter = "all";
+function renderList(filter){
+  var list = document.getElementById("proj-list");
+  var items = filter==="all" ? PROJECTS : PROJECTS.filter(function(p){return p.type===filter});
+  list.innerHTML = items.map(function(p,i){
+    return '<div class="proj-row" style="transition-delay:'+(i*38)+'ms"'
+      +' onmouseenter="activateBg('+p.id+')" onmouseleave="deactivateBg()"'
+      +' onclick="openDetail('+p.id+')">'
+      +'<div class="row-thumb">'+(p.img ? '<img src="'+p.img+'" alt="'+p.name+'" loading="lazy">' : '<div style="width:100%;height:100%;background:'+p.bg+'"></div>')+'</div>'
+      +'<div class="row-info">'
+      +'<div class="row-name">'+p.name+'</div>'
+      +'<div class="row-loc">'+p.loc+'</div>'
+      +'</div>'
+      +'<div class="row-type">'+p.typeLabel+'</div>'
+      +'<div class="row-arrow">\u2192</div>'
+      +'</div>';
+  }).join("");
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      document.querySelectorAll(".proj-row").forEach(function(r,i){
+        setTimeout(function(){r.classList.add("in")},i*38);
+      });
+    });
+  });
+}
+
+/* ═══════════════════════════════════════════════════════
+   DETAIL
+═══════════════════════════════════════════════════════ */
+function buildGallery(p){
+  return p.gallery.map(function(g,i){
+    var h = i===0 ? "72vh" : "58vh";
+    var mediaStyle = g.img
+      ? 'background-image:url('+g.img+');background-size:cover;background-position:center'
+      : 'background:'+g.bg;
+    return '<div class="d-gallery-item reveal" style="transition-delay:'+(i*70)+'ms">'
+      +'<div class="d-gallery-media" style="height:'+h+';'+mediaStyle+';"></div>'
+      +'<div class="d-gallery-cap"><strong>'+g.cap+' \u2014</strong> '+g.desc+'</div>'
+      +'</div>';
+  }).join("");
+}
+
+function openDetail(id){
+  var p = PROJECTS.filter(function(x){return x.id===id})[0];
+  if(!p) return;
+  deactivateBg();
+
+  var heroStyle = p.img
+    ? 'background-image:url('+p.img+');background-size:cover;background-position:center'
+    : 'background:'+p.bg;
+
+  var det = document.getElementById("detail");
+  det.innerHTML =
+    '<div class="d-hero detail-enter">'
+    +'<div class="d-nav">'
+    +'<button class="d-back" onclick="closeDetail()">\u2190 All Projects</button>'
+    +'</div>'
+    +'<div class="d-hero-media" id="dHeroMedia" style="'+heroStyle+';"></div>'
+    +'<div class="d-hero-scrim"></div>'
+    +'<div class="d-hero-foot">'
+    +'<div class="d-hero-name">'+p.name+'</div>'
+    +'<div class="d-hero-loc">'+p.loc+'</div>'
+    +'</div></div>'
+
+    +'<div class="d-share-row">'
+    +'<span class="d-share-link">Copy link</span>'
+    +'<span class="d-share-link">LinkedIn</span>'
+    +'<span class="d-share-link">Share</span>'
+    +'</div>'
+
+    +'<div class="d-meta"><div class="d-meta-row">'
+    +'<div class="d-meta-cell"><div class="d-meta-label">Client</div><div class="d-meta-value">'+p.client+'</div></div>'
+    +'<div class="d-meta-cell"><div class="d-meta-label">Typology</div><div class="d-meta-value">'+p.typeLabel+'</div></div>'
+    +'<div class="d-meta-cell"><div class="d-meta-label">Size m\u00B2</div><div class="d-meta-value">'+p.size+'</div></div>'
+    +'<div class="d-meta-cell"><div class="d-meta-label">Status</div><div class="d-meta-value">'+p.status+'</div></div>'
+    +'</div></div>'
+
+    +'<div class="d-body">'
+    +'<div class="d-text-block reveal">'+p.desc+'</div>'
+    +'<div class="d-gallery">'+buildGallery(p)+'</div>'
+    +'</div>';
+
+  det.scrollTop = 0;
+  det.classList.add("show");
+  setTimeout(function(){
+    var m = document.getElementById("dHeroMedia");
+    if(m) m.classList.add("zoomed");
+  },60);
+  initReveal(det);
+  det.onscroll = function(){
+    var m = document.getElementById("dHeroMedia");
+    if(m && det.scrollTop < window.innerHeight){
+      m.style.transform = "scale(1) translateY("+(det.scrollTop*0.26)+"px)";
+    }
+  };
+  document.getElementById("nav").classList.add("dark");
+}
+
+function closeDetail(){
+  var det = document.getElementById("detail");
+  det.classList.remove("show");
+  det.onscroll = null;
+  document.getElementById("nav").classList.remove("dark");
+}
+
+/* ═══════════════════════════════════════════════════════
+   ABOUT / CONTACT
+═══════════════════════════════════════════════════════ */
+function openAbout(){
+  var p = document.getElementById("about-page");
+  p.scrollTop = 0;
+  p.classList.add("show","detail-enter");
+  document.getElementById("nav").classList.add("dark");
+  initReveal(p); initCounters(p);
+}
+function closeAbout(){
+  document.getElementById("about-page").classList.remove("show","detail-enter");
+  document.getElementById("nav").classList.remove("dark");
+}
+/* ═══════════════════════════════════════════════════════
+   NEWS
+═══════════════════════════════════════════════════════ */
+var NEWS = [
+  {
+    id: 1,
+    tag: "Studio News",
+    date: "10 April 2026",
+    title: "IAM Opens New Studio at The Plaza, Jakarta",
+    excerpt: "PT Indo Artha Mandiri officially inaugurates its new headquarters on the 38th floor of The Plaza Office Tower, marking a new chapter for the studio.",
+    // Ganti nama file foto sesuai yang lo punya di iam-assets
+    hero: "iam-assets/NEWS_HERO.jpg",
+    gallery: [
+      "iam-assets/NEWS_01.jpg",
+      "iam-assets/NEWS_02.jpg",
+      "iam-assets/NEWS_03.jpg",
+      "iam-assets/NEWS_04.jpg",
+      "iam-assets/NEWS_05.jpg",
+      "iam-assets/NEWS_06.jpg",
+      "iam-assets/NEWS_07.jpg",
+      "iam-assets/NEWS_08.jpg",
+      "iam-assets/NEWS_09.jpg",
+      "iam-assets/NEWS_10.jpg",
+      "iam-assets/NEWS_11.jpg",
+    ],
+    body: `
+      <p>On 10 April 2026, PT Indo Artha Mandiri celebrated the grand opening of its new studio at The Plaza Office Tower, Jl. MH. Thamrin No. 28–30, Jakarta Pusat. The event marked a significant milestone for the studio, bringing together clients, collaborators, and friends to experience the new space firsthand.</p>
+
+      <h3>A Space Designed by IAM, for IAM</h3>
+      <p>The 122.4 m² office occupies a unit on the 38th floor of The Plaza, one of Jakarta's most prestigious business addresses. Every element of the interior — from the reception desk finished in dark marble, to the fluted wall panels and carefully curated material palette — was designed and documented in-house by the IAM team.</p>
+      <p>The layout comprises a reception and lounge area, two director's rooms, a staff workspace, a meeting lounge, a formal meeting room, and a pantry — each space flowing naturally into the next while maintaining visual privacy where needed.</p>
+
+      <h3>A New Chapter</h3>
+      <p>The move to The Plaza reflects the studio's growth and ambition. "We wanted a space that communicates who we are before we even say a word," said William Alirudin, Founder and Director of PT Indo Artha Mandiri. "Every decision in this office is intentional — it's a live portfolio."</p>
+      <p>The grand opening was attended by clients and partners including representatives from ASELSAN Indonesia and ROKETSAN, both of whom IAM has worked with closely on office interior projects in Jakarta.</p>
+
+      <h3>What's Next</h3>
+      <p>With the new studio now operational, IAM continues work on several ongoing projects across architecture, interior design, and landscape — including the St. John Paul II Church in Brayut and the ASELSAN Office Expansion at Astra Tower.</p>
+    `
+  }
+];
+
+function openNews(){
+  var page = document.getElementById('news-page');
+  var content = document.getElementById('news-content');
+
+  // render list
+  content.innerHTML = '<div class="news-list">'
+    + NEWS.map(function(n, i){
+        return '<div class="news-item" onclick="openArticle('+i+')">'
+          + '<div>'
+          + '<div class="news-item-tag">'+n.tag+'</div>'
+          + '<div class="news-item-date">'+n.date+'</div>'
+          + '<div class="news-item-title">'+n.title+'</div>'
+          + '<div class="news-item-excerpt">'+n.excerpt+'</div>'
+          + '</div>'
+          + '<img class="news-item-img" src="'+n.hero+'" onerror="this.style.display=\'none\'">'
+          + '</div>';
+      }).join('')
+    + '</div>';
+
+  page.scrollTop = 0;
+  page.classList.add('show','detail-enter');
+  initReveal(page);
+}
+
+function closeNews(){
+  document.getElementById('news-page').classList.remove('show','detail-enter');
+}
+var currentGallery = [];
+function openArticle(index){
+  var n = NEWS[index];
+  var content = document.getElementById('news-content');
+
+  // simpan list
+  content.dataset.prevContent = content.innerHTML;
+
+  // fade out
+  content.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+  content.style.opacity = '0';
+  content.style.transform = 'translateY(14px)';
+
+  setTimeout(function(){
+    var galleryHTML = '';
+if(n.gallery && n.gallery.length){
+  currentGallery = n.gallery;
+  galleryHTML = '<div class="news-article-gallery">'
+    + n.gallery.map(function(src, i){
+        return '<img src="'+src+'"'
+          + ' class="'+(i===0?'full':'')+'"'
+          + ' style="cursor:zoom-in;"'
+          + ' onclick="event.stopPropagation();openLightbox(currentGallery,'+i+',this)"'
+          + ' onerror="this.style.display=\'none\'">';
+      }).join('')
+    + '</div>';
+}
+
+    content.innerHTML =
+      '<button class="back-btn" style="position:sticky;top:calc(var(--nav-h) + 12px);left:24px;z-index:10;margin:0 0 0 24px;display:flex;align-items:center;gap:6px;" onclick="closeArticle()">← All News</button>'
+      + '<img class="news-article-hero" src="'+n.hero+'" onerror="this.style.display=\'none\'">'
+      + '<div class="news-article-body">'
+      + '<div class="news-article-tag">'+n.tag+'</div>'
+      + '<h1 class="news-article-title">'+n.title+'</h1>'
+      + '<div class="news-article-date">'+n.date+'</div>'
+      + '<div class="news-article-text">'+n.body+'</div>'
+      + galleryHTML
+      + '</div>';
+
+    document.getElementById('news-page').scrollTop = 0;
+
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        content.style.opacity = '1';
+        content.style.transform = 'translateY(0)';
+      });
+    });
+  }, 250);
+}
+
+function closeArticle(){
+  var content = document.getElementById('news-content');
+
+  content.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+  content.style.opacity = '0';
+  content.style.transform = 'translateY(14px)';
+
+  setTimeout(function(){
+    if(content.dataset.prevContent){
+      content.innerHTML = content.dataset.prevContent;
+      content.dataset.prevContent = '';
+    }
+    document.getElementById('news-page').scrollTop = 0;
+
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        content.style.opacity = '1';
+        content.style.transform = 'translateY(0)';
+      });
+    });
+  }, 250);
+}
+function openContact(){
+  var c = document.getElementById("contact-panel");
+  c.classList.add("show");
+  requestAnimationFrame(function(){requestAnimationFrame(function(){c.classList.add("open")})});
+}
+function closeContact(){
+  var c = document.getElementById("contact-panel");
+  c.classList.remove("open");
+  setTimeout(function(){c.classList.remove("show")},560);
+}
+function goHome(){
+
+    const detail = document.getElementById('detail');
+    const people = document.getElementById('people-page');
+
+    detail.classList.remove('show');
+    people.classList.remove('show');
+
+    document.getElementById("nav").classList.remove("dark");
+
+    window.scrollTo({
+        top:0,
+        behavior:'smooth'
+    });
+
+}
+
+/* ═══════════════════════════════════════════════════════
+   SCROLL REVEAL
+═══════════════════════════════════════════════════════ */
+function initReveal(root){
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){e.target.classList.add("shown");obs.unobserve(e.target)}
+    });
+  },{threshold:0.08,rootMargin:"0px 0px -40px 0px"});
+  (root||document).querySelectorAll(".reveal").forEach(function(el){obs.observe(el)});
+}
+
+function initCounters(root){
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(!e.isIntersecting) return;
+      var target = Number(e.target.dataset.target);
+      var start = null, dur = 1200;
+      function step(ts){
+        if(!start) start=ts;
+        var p = Math.min((ts-start)/dur,1);
+        var ease = 1-Math.pow(1-p,3);
+        e.target.textContent = Math.round(ease*target)+(p<1?"":"+");
+        if(p<1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+      obs.unobserve(e.target);
+    });
+  },{threshold:0.5});
+  (root||document).querySelectorAll("[data-target]").forEach(function(el){obs.observe(el)});
+}
+
+/* ═══════════════════════════════════════════════════════
+   FILTER
+═══════════════════════════════════════════════════════ */
+document.querySelectorAll(".fbtn").forEach(function(btn){
+  btn.addEventListener("click",function(){
+    document.querySelectorAll(".fbtn").forEach(function(b){b.classList.remove("on")});
+    btn.classList.add("on");
+    currentFilter = btn.dataset.f;
+    deactivateBg();
+    renderList(currentFilter);
+  });
+});
+
+/* ═══════════════════════════════════════════════════════
+   KEYBOARD
+═══════════════════════════════════════════════════════ */
+document.addEventListener("keydown",function(e){
+  if(e.key==="Escape"){
+    if(document.getElementById("contact-panel").classList.contains("open")) closeContact();
+    else if(document.getElementById("about-page").classList.contains("show")) closeAbout();
+    else if(document.getElementById("detail").classList.contains("show")) closeDetail();
+  }
+});
+
+/* ═══════════════════════════════════════════════════════
+   INTRO ANIMATION
+   Logo fades in → holds → fades out → nav appears
+═══════════════════════════════════════════════════════ */
+function runIntro(){
+  var intro = document.getElementById("intro");
+  var nav = document.getElementById("nav");
+  var fb = document.getElementById("filter-bar");
+
+  // After 1.8s, fade out intro
+  setTimeout(function(){
+    intro.style.transition = "opacity 0.7s ease";
+    intro.style.opacity = "0";
+    setTimeout(function(){
+      intro.classList.add("done");
+      // Show nav + filter bar
+      nav.classList.add("ready");
+      fb.classList.add("ready");
+      // Render list
+      buildBgLayers();
+      renderList("all");
+      initReveal();
+    },700);
+  },1800);
+}
+
+runIntro();
+function togglePopupMenu(){
+  const menu = document.getElementById('popup-menu');
+  menu.classList.toggle('show');
+}
+function openPeople(){
+
+    const people = document.getElementById('people-page');
+
+    people.classList.add('show');
+
+}
+function openPerson(index){
+    const p = peopleData[index];
+    const people = document.getElementById('people-page');
+
+    people.dataset.prevContent = people.innerHTML;
+
+    // bungkus konten sekarang dalam wrapper, fade wrapper itu
+    const wrapper = people.querySelector('.people-transition-wrap');
+    if(wrapper){
+        wrapper.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+        wrapper.style.opacity = '0';
+        wrapper.style.transform = 'translateY(14px)';
+    }
+
+    setTimeout(function(){
+        people.innerHTML = `
+        <div class="people-transition-wrap" style="opacity:0;transform:translateY(14px);">
+            <div class="people-header">
+                <button class="back-btn" onclick="closePerson()">← All People</button>
+                <h1>${p.name}</h1>
+                <div></div>
+            </div>
+            <div style="max-width:1100px;margin:80px auto;padding:0 6vw;display:grid;grid-template-columns:380px 1fr;gap:60px;align-items:start;">
+                <img src="${p.image}" style="width:100%;border-radius:16px;object-fit:cover;object-position:top;">
+                <div>
+                    <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#999;margin-bottom:14px;">${p.role}</div>
+                    <h1 style="font-size:clamp(32px,5vw,56px);font-weight:400;line-height:1;margin-bottom:28px;letter-spacing:-0.02em;">${p.name}</h1>
+                    <div style="font-size:15px;line-height:1.9;color:#444;">${p.bio}</div>
+                </div>
+            </div>
+        </div>
+        `;
+
+        people.scrollTop = 0;
+
+        const newWrap = people.querySelector('.people-transition-wrap');
+        requestAnimationFrame(function(){
+            requestAnimationFrame(function(){
+                newWrap.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+                newWrap.style.opacity = '1';
+                newWrap.style.transform = 'translateY(0)';
+            });
+        });
+
+    }, 250);
+}
+
+function closePerson(){
+    const people = document.getElementById('people-page');
+
+    const wrapper = people.querySelector('.people-transition-wrap');
+    if(wrapper){
+        wrapper.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+        wrapper.style.opacity = '0';
+        wrapper.style.transform = 'translateY(14px)';
+    }
+
+    setTimeout(function(){
+        if(people.dataset.prevContent){
+            people.innerHTML = people.dataset.prevContent;
+            people.dataset.prevContent = '';
+        }
+        people.scrollTop = 0;
+
+        // wrap konten list yang di-restore juga biar bisa fade in
+        const listContent = people.innerHTML;
+        people.innerHTML = `<div class="people-transition-wrap" style="opacity:0;transform:translateY(14px);">${listContent}</div>`;
+
+        const newWrap = people.querySelector('.people-transition-wrap');
+        requestAnimationFrame(function(){
+            requestAnimationFrame(function(){
+                newWrap.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+                newWrap.style.opacity = '1';
+                newWrap.style.transform = 'translateY(0)';
+            });
+        });
+
+    }, 250);
+}
+/* ── LIGHTBOX ───────────────────────────────────────── */
+var lbImages  = [];
+var lbIndex   = 0;
+var lbLastDir = 0;
+
+function openLightbox(imgs, startIndex, srcEl){
+  lbImages = imgs;
+  lbIndex  = startIndex || 0;
+
+  var lb    = document.getElementById('lightbox');
+  var lbImg = document.getElementById('lightbox-img');
+
+  lbImg.src = lbImages[lbIndex];
+
+  // masuk dari kanan
+  lbImg.style.transition = 'none';
+  lbImg.style.transform  = 'translateX(60px)';
+  lbImg.style.opacity    = '0';
+  lb.style.opacity       = '0';
+  lb.style.transition    = 'none';
+  lb.classList.add('show');
+
+  document.getElementById('lightbox-counter').textContent =
+    (lbIndex + 1) + ' / ' + lbImages.length;
+
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      lbImg.style.transition = 'transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.3s ease';
+      lb.style.transition    = 'opacity 0.3s ease';
+      lbImg.style.transform  = 'translateX(0)';
+      lbImg.style.opacity    = '1';
+      lb.style.opacity       = '1';
+    });
+  });
+
+  document.addEventListener('keydown', lightboxKey);
+}
+
+function closeLightbox(){
+  var lb    = document.getElementById('lightbox');
+  var lbImg = document.getElementById('lightbox-img');
+
+  // keluar ke kiri
+  lbImg.style.transition = 'transform 0.3s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.25s ease';
+  lb.style.transition    = 'opacity 0.3s ease';
+  lbImg.style.transform  = 'translateX(-60px)';
+  lbImg.style.opacity    = '0';
+  lb.style.opacity       = '0';
+
+  setTimeout(function(){
+    lb.classList.remove('show');
+    lbImg.style.cssText = '';
+    lb.style.cssText    = '';
+  }, 300);
+
+  document.removeEventListener('keydown', lightboxKey);
+}
+
+function renderLightbox(dir){
+  var lbImg = document.getElementById('lightbox-img');
+
+  if(dir !== undefined){
+    // slide out ke arah berlawanan
+    lbImg.style.transition = 'transform 0.18s ease, opacity 0.18s ease';
+    lbImg.style.transform  = dir > 0 ? 'translateX(-55px)' : 'translateX(55px)';
+    lbImg.style.opacity    = '0';
+
+    setTimeout(function(){
+      lbImg.src = lbImages[lbIndex];
+      lbImg.style.transition = 'none';
+      lbImg.style.transform  = dir > 0 ? 'translateX(55px)' : 'translateX(-55px)';
+      lbImg.style.opacity    = '0';
+
+      requestAnimationFrame(function(){
+        requestAnimationFrame(function(){
+          lbImg.style.transition = 'transform 0.32s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.25s ease';
+          lbImg.style.transform  = 'translateX(0)';
+          lbImg.style.opacity    = '1';
+        });
+      });
+    }, 180);
+  } else {
+    lbImg.src = lbImages[lbIndex];
+  }
+
+  document.getElementById('lightbox-counter').textContent =
+    (lbIndex + 1) + ' / ' + lbImages.length;
+}
+
+function lightboxNav(dir){
+  lbIndex = (lbIndex + dir + lbImages.length) % lbImages.length;
+  renderLightbox(dir);
+}
+
+function lightboxKey(e){
+  if(e.key === 'ArrowRight') lightboxNav(1);
+  if(e.key === 'ArrowLeft')  lightboxNav(-1);
+  if(e.key === 'Escape')     closeLightbox();
+}
+</script>
+<!-- LIGHTBOX -->
+<div id="lightbox" onclick="closeLightbox()">
+  <button id="lightbox-close" onclick="closeLightbox()">Close ✕</button>
+  <button id="lightbox-prev" onclick="event.stopPropagation();lightboxNav(-1)">&#8592;</button>
+  <img id="lightbox-img" src="">
+  <button id="lightbox-next" onclick="event.stopPropagation();lightboxNav(1)">&#8594;</button>
+  <div id="lightbox-counter"></div>
+</div>
+</body>
+</html>
